@@ -1,6 +1,6 @@
 # pi-steering-commit-format
 
-Commit-message format validation predicates for [pi-steering](https://github.com/cad0p/pi-steering-hooks).
+Commit-message format validation predicates for [pi-steering](https://github.com/cad0p/pi-steering).
 
 Bundled formats:
 
