@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Approve peer-graph build scripts (@google/genai, protobufjs) in pnpm-workspace.yaml ([#5](https://github.com/cad0p/pi-steering-commit-format/pull/5))
+- Workspace policies + node_modules-based type resolution for registry tests ([#9](https://github.com/cad0p/pi-steering-commit-format/pull/9))
 
 
 ## [Unreleased]
