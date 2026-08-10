@@ -1,6 +1,7 @@
-# pi-steering depends on unbash-walker via github: until its first npm publish;
-# pnpm 11 blocks git-resolved subdependencies by default, so allow them here.
-blockExoticSubdeps: false
-minimumReleaseAgeExclude:
-  - '@cad0p/pi-steering@0.1.0'
-  - '@cad0p/unbash-walker@0.1.0'
+# Build-script approval for the @earendil-works/pi-coding-agent peer graph
+# (pulled via @cad0p/pi-steering): genai's postinstall is needed for its JS
+# runtime; protobufjs works without its postinstall. (blockExoticSubdeps no
+# longer needed — all deps are registry ranges since the 0.1.0 publish.)
+allowBuilds:
+  '@google/genai': true
+  protobufjs: false
