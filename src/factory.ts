@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Part of pi-steering-commit-format.
 
-import type { PredicateContext, PredicateHandler } from "pi-steering";
+import type { PredicateContext, PredicateHandler } from "@cad0p/pi-steering";
 import { extractCommitMessage } from "./extract.ts";
 
 /**
@@ -51,7 +51,7 @@ export interface CommitFormatArgs<FormatName extends string = string> {
  *
  * @example
  * ```ts
- * import { commitFormatFactory, BUILTIN_FORMATS } from "pi-steering-commit-format";
+ * import { commitFormatFactory, BUILTIN_FORMATS } from "@cad0p/pi-steering-commit-format";
  *
  * // Use the builtins as-is:
  * const commitFormat = commitFormatFactory(BUILTIN_FORMATS);

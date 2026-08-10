@@ -22,7 +22,7 @@
  * plugin (or place it next to the plugin's central definition file).
  */
 
-import type { Plugin, PredicateShape } from "pi-steering";
+import type { Plugin, PredicateShape } from "@cad0p/pi-steering";
 import { BUILTIN_FORMATS } from "./builtin-formats.ts";
 import type { CommitFormatArgs } from "./factory.ts";
 import { commitFormatFactory } from "./factory.ts";
@@ -79,7 +79,7 @@ declare global {
    * is rejected at the type level.
    *
    * @see PredicateShape, DefaultSpreadBase, PredicateModifiers in
-   *      `pi-steering`'s `schema.ts` for the full registry contract.
+   *      `@cad0p/pi-steering`'s `schema.ts` for the full registry contract.
    * @see The `gitPlugin` declaration in pi-steering's
    *      `plugins/git/index.ts` for the canonical multi-predicate
    *      registry block.
