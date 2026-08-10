@@ -11,7 +11,7 @@ Extensible via `commitFormatFactory` — bring your own format checker and combi
 
 ## What this package is
 
-A sibling of `pi-steering` shipping the universal commit-message format checks as a plugin. Mirrors the `pi-steering-flags` precedent: opt-in functionality that doesn't belong in pi-steering core. External plugin authors get a clean import path; consumers that don't need commit-format validation don't pay the surface-area cost.
+A sibling of `@cad0p/pi-steering` shipping the universal commit-message format checks as a plugin. Mirrors the `pi-steering-flags` precedent: opt-in functionality that doesn't belong in pi-steering core. External plugin authors get a clean import path; consumers that don't need commit-format validation don't pay the surface-area cost.
 
 The package parses commit message strings — it does not walk bash ASTs. No `unbash` / `unbash-walker` dependency.
 
@@ -19,7 +19,7 @@ The package parses commit message strings — it does not walk bash ASTs. No `un
 
 ```ts
 // .pi/steering/index.ts
-import { defineConfig } from "pi-steering";
+import { defineConfig } from "@cad0p/pi-steering";
 import commitFormatPlugin from "pi-steering-commit-format";
 
 export default defineConfig({
@@ -77,7 +77,7 @@ import {
   BUILTIN_FORMATS,
   commitFormatFactory,
 } from "pi-steering-commit-format";
-import type { Plugin, PredicateShape } from "pi-steering";
+import type { Plugin, PredicateShape } from "@cad0p/pi-steering";
 
 const myCommitFormat = commitFormatFactory({
   ...BUILTIN_FORMATS,
@@ -110,7 +110,7 @@ The factory's `require:` arg is type-narrowed to `keyof F`, so TypeScript flags 
 
 For reference patterns when registering a custom predicate name on `PiSteeringPredicates`, see:
 
-- `pi-steering`'s `gitPlugin` in `plugins/git/index.ts` (multi-predicate registry block, mixed bare + spread shapes).
+- `@cad0p/pi-steering`'s `gitPlugin` in `plugins/git/index.ts` (multi-predicate registry block, mixed bare + spread shapes).
 - `pi-steering-flags`'s `src/index.ts` (sibling external plugin's registry block).
 - This package's own `src/plugin.ts` (single-predicate spread-only registry block for `commitFormat`).
 

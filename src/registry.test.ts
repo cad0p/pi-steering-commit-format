@@ -26,8 +26,8 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
-import type { PredicateContext } from "pi-steering";
-import { mockContext } from "pi-steering/testing";
+import type { PredicateContext } from "@cad0p/pi-steering";
+import { mockContext } from "@cad0p/pi-steering/testing";
 import * as ts from "typescript";
 import { commitFormat } from "./plugin.ts";
 
