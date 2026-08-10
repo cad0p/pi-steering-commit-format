@@ -1,0 +1,3 @@
+# pi-steering depends on unbash-walker via github: until its first npm publish;
+# pnpm 11 blocks git-resolved subdependencies by default, so allow them here.
+blockExoticSubdeps: false
