@@ -1,6 +1,17 @@
 # Changelog
 
-All notable changes to `pi-steering-commit-format` are documented in this file.
+All notable changes to this project will be documented in this file.
+
+## [calver-released]
+
+<!-- USER-EDITABLE SECTION START -->
+<!-- Add your curated release notes here. -->
+<!-- USER-EDITABLE SECTION END -->
+
+### 🐛 Bug Fixes
+
+- Approve peer-graph build scripts (@google/genai, protobufjs) in pnpm-workspace.yaml ([#5](https://github.com/cad0p/pi-steering-commit-format/pull/5))
+
 
 ## [Unreleased]
 
