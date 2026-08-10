@@ -33,9 +33,11 @@ import { commitFormat } from "./plugin.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CF_INDEX_PATH = path.resolve(HERE, "index.ts");
-const PI_STEERING_INDEX_PATH = path.resolve(
-  HERE,
-  "../../pi-steering/src/index.ts",
+// Resolve pi-steering's type declarations through node_modules (the
+// monorepo-era sibling path `../../pi-steering/src/index.ts` no longer
+// exists since the 2026-08-10 split).
+const PI_STEERING_INDEX_PATH = fileURLToPath(
+  new URL("../node_modules/@cad0p/pi-steering/dist/index.js", import.meta.url),
 );
 
 const COMPILER_OPTIONS: ts.CompilerOptions = {
