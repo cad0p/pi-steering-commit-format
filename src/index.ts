@@ -26,7 +26,6 @@ export { BUILTIN_FORMATS } from "./builtin-formats.ts";
 // Standalone helpers — usable from `when.condition` escape hatches
 // without touching the predicate factory.
 export { isConventionalCommit } from "./conventional.ts";
-export { extractCommitMessage } from "./extract.ts";
 
 // Predicate factory + types — for building custom format sets.
 export {

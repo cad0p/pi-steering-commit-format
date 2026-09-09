@@ -11,14 +11,31 @@
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import type { PredicateContext } from "@cad0p/pi-steering";
+import type { PredicateContext, PredicateWord } from "@cad0p/pi-steering";
+import { GIT_CLI_DESCRIPTOR } from "@cad0p/pi-steering/plugins/git";
 import { mockContext } from "@cad0p/pi-steering/testing";
 import { commitFormatPlugin } from "./plugin.ts";
 
-function ctxWithCommand(command: string): PredicateContext {
+function W(value: string): PredicateWord {
+  return { value, text: value, rawText: value, pos: 0, end: value.length };
+}
+
+/**
+ * Build a {@link PredicateContext} for a `git commit` ref carrying
+ * the given `-m` value as structured argv — the predicate reads it
+ * through the `ctx.command` facade (bound via the git table), the
+ * same path the engine binds per ref.
+ */
+function ctxWithMessage(message: string): PredicateContext {
   return mockContext({
     tool: "bash",
-    input: { tool: "bash", command },
+    input: {
+      tool: "bash",
+      command: `git commit -m "${message}"`,
+      basename: "git",
+      args: [W("commit"), W("-m"), W(message)],
+    },
+    descriptors: { git: GIT_CLI_DESCRIPTOR },
   });
 }
 
@@ -36,7 +53,7 @@ describe("commitFormatPlugin", () => {
   });
 
   it("validates a Conventional + JIRA commit (no fire)", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login [ABC-123]"`);
+    const ctx = ctxWithMessage("feat: add login [ABC-123]");
     const handler = commitFormatPlugin.predicates.commitFormat;
     assert.equal(
       await handler({ require: ["conventional", "jira"] }, ctx),
@@ -45,13 +62,13 @@ describe("commitFormatPlugin", () => {
   });
 
   it("fires on a non-Conventional commit", async () => {
-    const ctx = ctxWithCommand(`git commit -m "Update README"`);
+    const ctx = ctxWithMessage("Update README");
     const handler = commitFormatPlugin.predicates.commitFormat;
     assert.equal(await handler({ require: ["conventional"] }, ctx), true);
   });
 
   it("fires on a Conventional commit without a JIRA reference", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login"`);
+    const ctx = ctxWithMessage("feat: add login");
     const handler = commitFormatPlugin.predicates.commitFormat;
     assert.equal(await handler({ require: ["jira"] }, ctx), true);
   });

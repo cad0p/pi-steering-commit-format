@@ -2,7 +2,10 @@
 // Part of pi-steering-commit-format.
 
 import type { PredicateContext, PredicateHandler } from "@cad0p/pi-steering";
-import { extractCommitMessage } from "./extract.ts";
+import { GIT_CLI_DESCRIPTOR } from "@cad0p/pi-steering/plugins/git";
+
+/** Git `commit` message entries, referenced by variable from the owning table. */
+const { flags: gitFlags } = GIT_CLI_DESCRIPTOR;
 
 /**
  * A format checker takes a commit message and reports whether it
@@ -39,11 +42,21 @@ export interface CommitFormatArgs<FormatName extends string = string> {
  * Type-system-correct callers cannot reach this branch — the generic
  * `keyof F & string` narrows `args.require` at the type level.
  *
+ * Message source: every `-m` / `--message` value via the
+ * context-provided `ctx.command` facade (`getAllFlagValues` over
+ * the git table's `message` entry — quote-aware, no string scans),
+ * joined with git's `"\n\n"` concat rule for repeats (join policy
+ * is owned here, not by core). Both spellings are covered — the old
+ * string scan only saw `-m`. An attached-empty `--message=` yields
+ * an explicit empty message (core scalar/array contract); an empty
+ * joined message matches no format, so the rule fires fail-closed
+ * when formats are required.
+ *
  * Behavior on missing `-m`: the predicate returns `false` (rule
- * doesn't fire) when the command has no `-m` value. A bare
- * `git commit` opens an editor for the message, which this predicate
- * doesn't validate; pair with a separate hook if you need to gate on
- * editor commits.
+ * doesn't fire) when the command carries no `-m` / `--message`
+ * value. A bare `git commit` opens an editor for the message,
+ * which this predicate doesn't validate; pair with a separate hook
+ * if you need to gate on editor commits.
  *
  * Behavior on empty `require: []`: returns `false` (no formats
  * required → nothing fires). Silent-pass per the no-formats =
@@ -67,13 +80,12 @@ export function commitFormatFactory<F extends Record<string, FormatChecker>>(
   formats: F,
 ): PredicateHandler<CommitFormatArgs<keyof F & string>> {
   return async (args, ctx: PredicateContext) => {
-    const cmd = ctx.input.command ?? "";
-    const msg = extractCommitMessage(cmd);
+    const msg = ctx.command.getAllFlagValues([gitFlags.message]).join("\n\n");
     if (!msg) return false; // no -m to validate
     for (const fmt of args.require) {
       const checker = formats[fmt];
       // Defensive: typed callers never hit `!checker`; guards JS / as-any bypass.
-      if (!checker || !checker(msg)) return true; // fire: format missing
+      if (!checker?.(msg)) return true; // fire: format missing
     }
     return false;
   };

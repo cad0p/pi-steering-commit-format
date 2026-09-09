@@ -26,7 +26,8 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
-import type { PredicateContext } from "@cad0p/pi-steering";
+import type { PredicateContext, PredicateWord } from "@cad0p/pi-steering";
+import { GIT_CLI_DESCRIPTOR } from "@cad0p/pi-steering/plugins/git";
 import { mockContext } from "@cad0p/pi-steering/testing";
 import * as ts from "typescript";
 import { commitFormat } from "./plugin.ts";
@@ -84,15 +85,44 @@ const IMPORT_HEADER = [
 const RULE_PROLOGUE = [
   '\tname: "x",',
   '\ttool: "bash",',
-  '\tfield: "command",',
-  '\tpattern: "^git commit",',
+  '\tcommand: "git",',
   '\treason: "x",',
 ].join("\n");
 
-function ctxWithCommand(command: string): PredicateContext {
+function W(value: string): PredicateWord {
+  return { value, text: value, rawText: value, pos: 0, end: value.length };
+}
+
+/**
+ * Build a {@link PredicateContext} for a `git commit` ref carrying
+ * the given `-m` value as structured argv — the predicate reads it
+ * through the `ctx.command` facade (bound via the git table), the
+ * same path the engine binds per ref.
+ */
+function ctxWithMessage(message: string): PredicateContext {
   return mockContext({
     tool: "bash",
-    input: { tool: "bash", command },
+    input: {
+      tool: "bash",
+      command: `git commit -m "${message}"`,
+      basename: "git",
+      args: [W("commit"), W("-m"), W(message)],
+    },
+    descriptors: { git: GIT_CLI_DESCRIPTOR },
+  });
+}
+
+/** A bare `git commit` ref (editor flow — no `-m`). */
+function ctxBareCommit(): PredicateContext {
+  return mockContext({
+    tool: "bash",
+    input: {
+      tool: "bash",
+      command: "git commit",
+      basename: "git",
+      args: [W("commit")],
+    },
+    descriptors: { git: GIT_CLI_DESCRIPTOR },
   });
 }
 
@@ -103,7 +133,7 @@ describe("pi-steering-commit-format PiSteeringPredicates registry", () => {
         IMPORT_HEADER +
         "const r = {\n" +
         RULE_PROLOGUE +
-        '\n\twhen: { commitFormat: { require: ["conventional"] } },\n' +
+        '\n\twhen: { subcommand: "commit", commitFormat: { require: ["conventional"] } },\n' +
         "} as const satisfies Rule;\n" +
         "export default defineConfig({ rules: [r] });\n";
       const diagnostics = compile(scratchDir, source);
@@ -123,7 +153,7 @@ describe("pi-steering-commit-format PiSteeringPredicates registry", () => {
         IMPORT_HEADER +
         "const r = {\n" +
         RULE_PROLOGUE +
-        '\n\twhen: { commitFormat: { require: ["conventional", "jira"] } },\n' +
+        '\n\twhen: { subcommand: "commit", commitFormat: { require: ["conventional", "jira"] } },\n' +
         "} as const satisfies Rule;\n" +
         "export default defineConfig({ rules: [r] });\n";
       const diagnostics = compile(scratchDir, source);
@@ -143,7 +173,7 @@ describe("pi-steering-commit-format PiSteeringPredicates registry", () => {
         IMPORT_HEADER +
         "const r = {\n" +
         RULE_PROLOGUE +
-        '\n\twhen: { thisIsNotARegisteredPredicate: "x" },\n' +
+        '\n\twhen: { subcommand: "commit", thisIsNotARegisteredPredicate: "x" },\n' +
         "} as const satisfies Rule;\n" +
         "export default defineConfig({ rules: [r] });\n";
       const diagnostics = compile(scratchDir, source);
@@ -172,7 +202,7 @@ describe("pi-steering-commit-format PiSteeringPredicates registry", () => {
         IMPORT_HEADER +
         "const r = {\n" +
         RULE_PROLOGUE +
-        '\n\twhen: { commitFormat: { require: ["conventionnnnnal"] } },\n' +
+        '\n\twhen: { subcommand: "commit", commitFormat: { require: ["conventionnnnnal"] } },\n' +
         "} as const satisfies Rule;\n" +
         "export default defineConfig({ rules: [r] });\n";
       const diagnostics = compile(scratchDir, source);
@@ -188,27 +218,27 @@ describe("pi-steering-commit-format PiSteeringPredicates registry", () => {
 
 describe("default commitFormat predicate (BUILTIN_FORMATS wiring)", () => {
   it("does NOT fire on a Conventional commit when only `conventional` is required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login"`);
+    const ctx = ctxWithMessage("feat: add login");
     assert.equal(await commitFormat({ require: ["conventional"] }, ctx), false);
   });
 
   it("fires on a non-Conventional commit when `conventional` is required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "Update README"`);
+    const ctx = ctxWithMessage("Update README");
     assert.equal(await commitFormat({ require: ["conventional"] }, ctx), true);
   });
 
   it("does NOT fire on a JIRA-bracketed commit when only `jira` is required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "[ABC-123] add login"`);
+    const ctx = ctxWithMessage("[ABC-123] add login");
     assert.equal(await commitFormat({ require: ["jira"] }, ctx), false);
   });
 
   it("fires on a Conventional-only commit when `jira` is required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login"`);
+    const ctx = ctxWithMessage("feat: add login");
     assert.equal(await commitFormat({ require: ["jira"] }, ctx), true);
   });
 
   it("does NOT fire on a Conventional + JIRA commit when both are required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login [ABC-123]"`);
+    const ctx = ctxWithMessage("feat: add login [ABC-123]");
     assert.equal(
       await commitFormat({ require: ["conventional", "jira"] }, ctx),
       false,
@@ -216,7 +246,7 @@ describe("default commitFormat predicate (BUILTIN_FORMATS wiring)", () => {
   });
 
   it("fires on a Conventional-only commit when both `conventional` and `jira` are required", async () => {
-    const ctx = ctxWithCommand(`git commit -m "feat: add login"`);
+    const ctx = ctxWithMessage("feat: add login");
     assert.equal(
       await commitFormat({ require: ["conventional", "jira"] }, ctx),
       true,
@@ -224,12 +254,12 @@ describe("default commitFormat predicate (BUILTIN_FORMATS wiring)", () => {
   });
 
   it("does NOT fire on a bare `git commit` (no -m, editor mode is out of scope)", async () => {
-    const ctx = ctxWithCommand(`git commit`);
+    const ctx = ctxBareCommit();
     assert.equal(await commitFormat({ require: ["conventional"] }, ctx), false);
   });
 
   it("does NOT fire on `require: []` (no formats required → no-op)", async () => {
-    const ctx = ctxWithCommand(`git commit -m "anything"`);
+    const ctx = ctxWithMessage("anything");
     assert.equal(await commitFormat({ require: [] }, ctx), false);
   });
 });
