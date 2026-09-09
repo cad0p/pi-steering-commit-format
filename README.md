@@ -13,7 +13,7 @@ Extensible via `commitFormatFactory` — bring your own format checker and combi
 
 A sibling of `@cad0p/pi-steering` shipping the universal commit-message format checks as a plugin. Mirrors the `pi-steering-flags` precedent: opt-in functionality that doesn't belong in pi-steering core. External plugin authors get a clean import path; consumers that don't need commit-format validation don't pay the surface-area cost.
 
-The package parses commit message strings — it does not walk bash ASTs. No `unbash` / `unbash-walker` dependency.
+The package reads commit messages through pi-steering's structured command facade (`ctx.command` over the git flag table) — quote-aware, no string scans. It does not walk bash ASTs itself. No `unbash` / `unbash-walker` dependency.
 
 ## Quick start
 
@@ -28,18 +28,19 @@ export default defineConfig({
     {
       name: "require-conventional-commit",
       tool: "bash",
-      field: "command",
-      pattern: /^git\s+commit\b/,
-      when: { commitFormat: { require: ["conventional"] } },
+      command: "git",
+      when: { subcommand: "commit", commitFormat: { require: ["conventional"] } },
       reason:
         "Commit messages must follow Conventional Commits 1.0.0 with the Angular preset's type allowlist (feat: ..., fix(scope): ..., etc.).",
     },
     {
       name: "require-jira-and-conventional",
       tool: "bash",
-      field: "command",
-      pattern: /^git\s+commit\b/,
-      when: { commitFormat: { require: ["conventional", "jira"] } },
+      command: "git",
+      when: {
+        subcommand: "commit",
+        commitFormat: { require: ["conventional", "jira"] },
+      },
       reason:
         "Commit messages must follow Conventional Commits 1.0.0 with the Angular preset's type allowlist AND include a bracketed JIRA reference (e.g. [ABC-123]).",
     },
@@ -66,7 +67,7 @@ The default plugin ships with two format checkers:
 
 Empty `require: []` is a no-op (nothing required → nothing fires).
 
-The predicate inspects `ctx.input.command`, extracts the `-m <msg>` value via `extractCommitMessage`, and runs every required checker. Commands without a `-m` (e.g., bare `git commit`, which would open an editor) are NOT validated by this predicate — the editor flow needs a separate hook.
+The predicate reads every `-m` / `--message` value through the context-provided `ctx.command` facade (`getAllFlagValues` over the git table's `message` entry — quote-aware, no string scans) and joins repeats with git's `"\n\n"` concat rule before running every required checker. Commands without a `-m` / `--message` (e.g., bare `git commit`, which would open an editor) are NOT validated by this predicate — the editor flow needs a separate hook.
 
 ## Combine with custom formats
 

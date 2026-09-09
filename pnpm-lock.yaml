@@ -12,8 +12,8 @@ importers:
         specifier: ^2.3.14
         version: 2.5.7
       '@cad0p/pi-steering':
-        specifier: ^0.1.0
-        version: 0.1.0(@earendil-works/pi-coding-agent@0.84.1(ws@8.21.3)(zod@4.4.3))
+        specifier: 0.2.0-20260908.1
+        version: 0.2.0-20260908.1(@earendil-works/pi-coding-agent@0.84.1(ws@8.21.3)(zod@4.4.3))
       '@types/node':
         specifier: ^20.19.39
         version: 20.19.43
@@ -190,15 +190,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cad0p/pi-steering@0.1.0':
-    resolution: {integrity: sha512-1Ll4CWc47PrQQUbCXGw21Iq7trv/R7nYjlrDB6WDk8b3JzSRmEHIrW6auCbOSEC8vzQx63shrsjlpXwRZemB3Q==}
-    engines: {node: '>=22'}
+  '@cad0p/pi-steering@0.2.0-20260908.1':
+    resolution: {integrity: sha512-5AW7YgtOlypVvIWb766+iDTdiDAIQBakRjCg+ol1/y+ugnA/Y/yatRDTo+/+MN3mbabrXk6ggpGPRXkHBKmItA==}
+    engines: {node: '>=22.19.0'}
     hasBin: true
     peerDependencies:
-      '@earendil-works/pi-coding-agent': '*'
+      '@earendil-works/pi-coding-agent': '>=0.79.1'
 
-  '@cad0p/unbash-walker@0.1.0':
-    resolution: {integrity: sha512-DVtmALxhJDd2PegCgQ8tPzd8kpb8WuILRhi5a1bTwJyrqb9GQTs6V3t3/SVogcNeoNY+AVdR4RPM+qv0bwTmbg==}
+  '@cad0p/unbash-walker@0.1.0-20260904.0':
+    resolution: {integrity: sha512-FWstcWAriXgYnLJZcyj1E2ExRvYDku3CARRorQX1ROVFRjbjfN4QaiQ1LumpXbPa4MtoZAAqnX+yc1m2LM8ZUw==}
     engines: {node: '>=22'}
 
   '@earendil-works/pi-agent-core@0.84.1':
@@ -644,6 +644,10 @@ packages:
     resolution: {integrity: sha512-FeFPZ/WFT0mbRCuydiZzpPFlrYN8ZUpphQKoq4EeElVIYjYyGzPMxQR/simUwCOJIyVhpFk4RbtyO7RuMpMnHA==}
     engines: {node: '>=14'}
 
+  unbash@4.0.11:
+    resolution: {integrity: sha512-FoSOKV7NEofQSkAefMVHam4ZPKYMxjAydxiV72UFEDNV/YofxjGfiZ2A9pZjdL/lRJzTjcu4PABo1JYJX8N5iQ==}
+    engines: {node: '>=14'}
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -732,7 +736,7 @@ snapshots:
       '@aws-sdk/types': 3.974.2
       '@smithy/core': 3.31.1
       '@smithy/fetch-http-handler': 5.6.13
-      '@smithy/node-http-handler': 4.7.3
+      '@smithy/node-http-handler': 4.9.13
       '@smithy/types': 4.16.1
       tslib: 2.8.1
 
@@ -944,15 +948,16 @@ snapshots:
   '@biomejs/cli-win32-x64@2.5.7':
     optional: true
 
-  '@cad0p/pi-steering@0.1.0(@earendil-works/pi-coding-agent@0.84.1(ws@8.21.3)(zod@4.4.3))':
+  '@cad0p/pi-steering@0.2.0-20260908.1(@earendil-works/pi-coding-agent@0.84.1(ws@8.21.3)(zod@4.4.3))':
     dependencies:
-      '@cad0p/unbash-walker': 0.1.0
+      '@cad0p/unbash-walker': 0.1.0-20260904.0
       '@earendil-works/pi-coding-agent': 0.84.1(ws@8.21.3)(zod@4.4.3)
+      jiti: 2.7.0
       unbash: 3.0.0
 
-  '@cad0p/unbash-walker@0.1.0':
+  '@cad0p/unbash-walker@0.1.0-20260904.0':
     dependencies:
-      unbash: 3.0.0
+      unbash: 4.0.11
 
   '@earendil-works/pi-agent-core@0.84.1(ws@8.21.3)(zod@4.4.3)':
     dependencies:
@@ -1412,6 +1417,8 @@ snapshots:
   typescript@5.9.3: {}
 
   unbash@3.0.0: {}
+
+  unbash@4.0.11: {}
 
   undici-types@6.21.0: {}
 

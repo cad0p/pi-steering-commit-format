@@ -68,8 +68,10 @@ declare global {
    * at use site via `& PredicateModifiers` (outer leaf) or at the
    * not-block top level (inside `not:`).
    *
-   * The predicate inspects `ctx.input.command` only — no walker
-   * state is consulted, so there's no walker-unknown-cwd guard.
+   * The predicate reads `-m` / `--message` through the
+   * context-provided `ctx.command` facade (git table entries) —
+   * no string scans, no walker state consulted, so there's no
+   * walker-unknown-cwd guard.
    *
    * Custom-format consumers (those who build a predicate via
    * {@link commitFormatFactory} over a non-builtin format set) MUST
