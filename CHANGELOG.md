@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 
 - Add PUBLISHING.md (scoped @cad0p publish + semver-calver-release flow) ([#10](https://github.com/cad0p/pi-steering-commit-format/pull/10))
 
+### ⚙️ Miscellaneous Tasks
+
+- Migrate to core command-first API (closes #11)
+
 
 ## [Unreleased]
 
