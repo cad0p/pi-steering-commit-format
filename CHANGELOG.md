@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Add PUBLISHING.md (scoped @cad0p publish + semver-calver-release flow) ([#10](https://github.com/cad0p/pi-steering-commit-format/pull/10))
+- AGENTS.md — pinned base text (drop Goldmine variant) (closes #13) ([#14](https://github.com/cad0p/pi-steering-commit-format/pull/14))
 
 ### ⚙️ Miscellaneous Tasks
 
